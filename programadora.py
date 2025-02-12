@@ -27,13 +27,13 @@ print("Σyt", Σxt_oxido_nitrosoy, "Σx1t humedadx1", Σxt_humedadx1, "Σx2t hum
 
 print ("Σxt", Σxt_4col)
 
-"""Σxt² sumatorias de los elementos elevados al cuadrado"""
+# Sumatorias de los elementos elevados al cuadrado
+Σxt2_oxido_nitrosoy = sum([elemento ** 2 for elemento in oxido_nitrosoy])
+Σxt2_humedadx1 = sum([elemento ** 2 for elemento in humedadx1])
+Σxt2_temperaturax2 = sum([elemento ** 2 for elemento in temperaturax2])
+Σxt2_presionx3 = sum([elemento ** 2 for elemento in presionx3])
 
-Σxt2_oxido_nitrosoy = list( map( lambda elemento : elemento * elemento , [oxido_nitrosoy]) )
-Σxt2_humedadx1 = list( map( lambda elemento : elemento * elemento , [Σxt_humedadx1] ) )
-Σxt2_temperaturax2 = list( map( lambda elemento : elemento * elemento , [Σxt_temperaturax2]) )
-Σxt2_presionx3 = list( map( lambda elemento : elemento * elemento , [Σxt_presionx3] ) )
-
-print("Σyt²", Σxt2_oxido_nitrosoy, "Σx1t² humedadx1", Σxt2_humedadx1, "Σx2t² humedadx1", Σxt2_temperaturax2, "Σx3t²", Σxt2_presionx3 )
-
-
+print("Σyt²:", Σxt2_oxido_nitrosoy, 
+      "Σx1t² humedadx1:", Σxt2_humedadx1, 
+      "Σx2t² temperaturax2:", Σxt2_temperaturax2, 
+      "Σx3t² presionx3:", Σxt2_presionx3)
