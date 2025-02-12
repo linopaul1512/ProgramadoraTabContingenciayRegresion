@@ -27,7 +27,7 @@ print("Σyt", Σxt_oxido_nitrosoy, "Σx1t humedadx1", Σxt_humedadx1, "Σx2t hum
 
 print ("Σxt", Σxt_4col)
 
-# Sumatorias de los elementos elevados al cuadrado
+"""Sumatorias de los elementos elevados al cuadrado"""
 Σxt2_oxido_nitrosoy = sum([elemento ** 2 for elemento in oxido_nitrosoy])
 Σxt2_humedadx1 = sum([elemento ** 2 for elemento in humedadx1])
 Σxt2_temperaturax2 = sum([elemento ** 2 for elemento in temperaturax2])
