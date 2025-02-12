@@ -1,6 +1,5 @@
 import numpy as np
-import numpy as np
-
+import pandas as 
 # Listas para almacenar los datos ingresados
 oxido_nitrosoy = []
 humedadx1 = []
@@ -44,26 +43,15 @@ while True:
 
 
 """Σxt sumatorias de los elementos de cada columna"""
+Σxt_oxido_nitrosoy = sum(oxido_nitrosoy, 4)
+Σxt_humedadx1  = sum(humedadx1, 4)
+Σxt_temperaturax2  = sum(temperaturax2, 4)
+Σxt_presionx3  = sum(presionx3, 4)
 
-Σxt_oxido_nitrosoy = sum(oxido_nitrosoy)
-Σxt_humedadx1  = sum(humedadx1)
-Σxt_temperaturax2  = sum(temperaturax2)
-Σxt_presionx3  = sum(presionx3)
+print(f"Σyt: {Σxt_oxido_nitrosoy}, Σx1t humedadx1: { Σxt_humedadx1} Σx2t humedadx1: {Σxt_temperaturax2}, Σx3t: {Σxt_presionx3} ", 4)
 
-print("Σyt", Σxt_oxido_nitrosoy, "Σx1t humedadx1", Σxt_humedadx1, "Σx2t humedadx1", Σxt_temperaturax2, "Σx3t", Σxt_presionx3 )
 
-Σxt_4col = sum([Σxt_oxido_nitrosoy,Σxt_humedadx1, Σxt_temperaturax2, Σxt_presionx3])
+
+Σxt_4col = sum([Σxt_oxido_nitrosoy,Σxt_humedadx1, Σxt_temperaturax2, Σxt_presionx3, 4])
 
 print ("Σxt", Σxt_4col)
-
-
-"""Sumatorias de los elementos elevados al cuadrado"""
-Σxt2_oxido_nitrosoy = sum([elemento ** 2 for elemento in oxido_nitrosoy])
-Σxt2_humedadx1 = sum([elemento ** 2 for elemento in humedadx1])
-Σxt2_temperaturax2 = sum([elemento ** 2 for elemento in temperaturax2])
-Σxt2_presionx3 = sum([elemento ** 2 for elemento in presionx3])
-
-print("Σyt²:", Σxt2_oxido_nitrosoy, 
-      "Σx1t² humedadx1:", Σxt2_humedadx1, 
-      "Σx2t² temperaturax2:", Σxt2_temperaturax2, 
-      "Σx3t² presionx3:", Σxt2_presionx3)
