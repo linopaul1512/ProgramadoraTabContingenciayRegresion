@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
+import scipy.stats  as stats
 
+from scipy.special import fdtr
+
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(1, 1)
 
 """Listas para almacenar los datos ingresados"""
 oxido_nitrosoy = []
@@ -208,4 +213,17 @@ print(fuente_variacion)
 
 
 
+"""Prueba de hipotesis"""
 
+# Cálculo de F tabular
+Ftab = stats.f.ppf(1 - alfa, gl_tratamiento, gl_error)
+print(f"F tabular: {round(Ftab, 4)}")
+
+# Comparación y decision
+
+if f_rv > Ftab:
+    decision = "Rechazar H₀ (Existe diferencia significativa)"
+else:
+    decision = "Aceptar H₀ (No hay diferencia significativa)"
+
+print(f"Decisión: {decision}")
