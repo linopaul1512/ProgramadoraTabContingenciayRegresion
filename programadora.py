@@ -150,11 +150,11 @@ x_presionx3 =  Σxt_presionx3 / nt_presionx3
 print(f" x̅y: {round(x_oxido_nitrosoy, 4)}, x̅x1: {round(x_humedadx1, 4)}, x̅x2: {round(x_temperaturax2)}, x̅x3: {round(x_presionx3)}")
 
 x_4col = sum([x_oxido_nitrosoy, x_humedadx1, x_temperaturax2, x_presionx3])
-print ("x̅: ", x_4col)
+print ("x̅: ", round(x_4col))
 
 """Calcular nivel de significancia"""
 alfa = 1 - nivel_significancia
-print(f"α (alfa):" , {round(alfa, 4)})
+print(f"α (alfa):" , round(alfa, 4))
 
 """grados de libertad del tratamiento"""
 gl_tratamiento =   t -1
@@ -162,22 +162,49 @@ print(f"gl(tratamiento):" , gl_tratamiento)
 
 """grados de libertad del error"""
 gl_error = Σnt_4col - t
-print(f"gl(tratamiento):" , {round(gl_error, 4)})
+print(f"gl(error):" , round(gl_error, 4))
 
 """Factor de correcion"""
 c =  Σxt_4col ** 2  / Σnt_4col
-print(f"Factor de correcion (C):" , {round(gl_error)})
+print(f"Factor de correcion (C):" , round(c, 4))
 
 """Suma Total de Cuadradados"""
 sct = Σxt2_4col - c
-print(f"Suma Total de Cuadrados (SCT):" , {round(sct, 4)})
+print(f"Suma Total de Cuadrados (SCT):" , round(sct, 4))
 
 """Suma Cuadradada de Tratamiento"""
 sctr = ΣxtcuaN_4col - c
-print(f"Suma Cuadradada de Tratamiento (SCTR):" , {round(sctr, 4)})
+print(f"Suma Cuadradada de Tratamiento (SCTR):" , round(sctr, 4))
+
+"""Suma Cuadradada de error"""
+sce = Σxt2_4col - ΣxtcuaN_4col
+print(f"Suma Cuadradada de Error (SCE):" , round(sce, 4))
+
+"""n - 1"""
+nmenos1 = Σnt_4col - 1
+
+"""MCTR"""
+mctr = sctr / gl_tratamiento
+
+"""MCE"""
+mce = sce / gl_error
+
+"""F(RV) Fisher razón de variacion"""
+f_rv = mctr / mce
 
 
+""" Crear DataFrame con pandas de la fuente de variacion"""
 
+fuente_variacion = pd.DataFrame({
+    "Fuentes de variacion": ["Tratamiento", "Error", "Total"],
+    "SC": [round(sctr, 4), round(sce, 4), round(sct, 4)],
+    "gl": [round(gl_tratamiento, 4), round(gl_error, 4), nmenos1],
+    "MC": [round(mctr, 4), round(mce, 4), None],  # 'Total' no tiene MC, asigna None
+    "F(RV)": [round(f_rv, 4), None, None]  # 'Error' y 'Total' no tienen F(RV), asigna None
+})
+
+
+print(fuente_variacion)
 
 
 
