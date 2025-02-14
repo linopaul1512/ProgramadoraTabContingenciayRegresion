@@ -1,12 +1,14 @@
 import numpy as np
 import pandas as pd
 import scipy.stats  as stats
-
-from scipy.special import fdtr
-
+import seaborn as sns
+from scipy.special import fdtr, studentized_range
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import matplotlib.pyplot as plt
-fig, ax = plt.subplots(1, 1)
 
+
+
+fig, ax = plt.subplots(1, 1)
 """Listas para almacenar los datos ingresados"""
 oxido_nitrosoy = []
 humedadx1 = []
@@ -213,17 +215,60 @@ print(fuente_variacion)
 
 
 
-"""Prueba de hipotesis"""
-
-# Cálculo de F tabular
+"""Buscar F tabulada """
 Ftab = stats.f.ppf(1 - alfa, gl_tratamiento, gl_error)
-print(f"F tabular: {round(Ftab, 4)}")
+print(f"F tabulada: {round(Ftab, 4)}")
 
-# Comparación y decision
-
+"""Comparación y decision"""
+print("[Si  Fcal > Ftab = RR]" , "Fcalc < Ftab = RA")
 if f_rv > Ftab:
     decision = "Rechazar H₀ (Existe diferencia significativa)"
 else:
     decision = "Aceptar H₀ (No hay diferencia significativa)"
 
 print(f"Decisión: {decision}")
+
+"""Prueba DHS"""
+fig, ax = plt.subplots(1, 1)
+
+k, df = 3, 10
+x = np.linspace(studentized_range.ppf(0.01, k, df),
+                studentized_range.ppf(0.99, k, df), 100)
+ax.plot(x, studentized_range.pdf(x, k, df),
+        'r-', lw=5, alpha=nivel_significancia, label='studentized_range pdf')
+
+
+# Crear el DataFrame con los datos ingresados
+df = pd.DataFrame({
+    "Óxido Nitroso (y)": oxido_nitrosoy,
+    "Humedad (x1)": humedadx1,
+    "Temperatura (x2)": temperaturax2,
+    "Presión (x3)": presionx3
+})
+
+# Convertir los datos a una sola lista con etiquetas de grupo
+data = []
+grupos = []
+
+for i, valores in enumerate([oxido_nitrosoy, humedadx1, temperaturax2, presionx3]):
+    data.extend(valores)
+    grupos.extend([f"Grupo {i+1}"] * len(valores))
+
+
+
+# Aplicar la prueba de Tukey
+tukey = pairwise_tukeyhsd(endog=data, groups=grupos, alpha=1-nivel_significancia)
+
+# Mostrar los resultados
+print("\n✅ Resultados de la prueba de Tukey")
+print(tukey)
+
+# Calcular correlaciones entre las variables independientes y y (Óxido Nitroso)
+correlacion_x1 = stats.pearsonr(x1, y)[0]
+correlacion_x2 = stats.pearsonr(x2, y)[0]
+correlacion_x3 = stats.pearsonr(x3, y)[0]
+
+print(f"Correlación Humedad - Óxido Nitroso: {correlacion_x1:.4f}")
+print(f"Correlación Temperatura - Óxido Nitroso: {correlacion_x2:.4f}")
+print(f"Correlación Presión - Óxido Nitroso: {correlacion_x3:.4f}")
+
