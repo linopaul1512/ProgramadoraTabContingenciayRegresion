@@ -215,8 +215,8 @@ fuente_variacion = pd.DataFrame({
     "Fuentes de variacion": ["Tratamiento", "Error", "Total"],
     "SC": [round(sctr, 4), round(sce, 4), round(sct, 4)],
     "gl": [round(gl_tratamiento, 4), round(gl_error, 4), nmenos1],
-    "MC": [round(mctr, 4), round(mce, 4), None],  # 'Total' no tiene MC, asigna None
-    "F(RV)": [round(f_rv, 4), None, None]  # 'Error' y 'Total' no tienen F(RV), asigna None
+    "MC": [round(mctr, 4), round(mce, 4), None],  
+    "F(RV)": [round(f_rv, 4), None, None]  
 })
 
 
