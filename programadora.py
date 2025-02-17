@@ -286,7 +286,42 @@ for g1, g2 in pares:
     # Mostrar los resultados en formato de tabla
     print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{hsd:<10.4f}{independencia}")
 
+"""#Correlacion  y recta de regresion lineal
 
+# Convertir las listas de entrada a arreglos de numpy
+X = np.array([humedadx1, temperaturax2, presionx3]).T  # Variables independientes
+y = np.array(oxido_nitrosoy)  # Variable dependiente
+
+# Agregar una columna de 1's para el término independiente
+X = np.c_[np.ones(X.shape[0]), X]
+
+# Calcular los coeficientes de regresión usando la fórmula de la regresión lineal múltiple
+# β = (X^T * X)^-1 * X^T * y
+beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
+
+# Mostrar los coeficientes de la regresión
+print(f"Coeficientes de la regresión (incluyendo el término independiente): {beta}")
+
+# Calcular la correlación entre las variables independientes y la variable dependiente
+correlation_matrix = np.corrcoef(X[:, 1:], y)  # Excluimos la columna de unos para la correlación
+print(f"Correlación entre las variables independientes y dependientes:\n{correlation_matrix}")
+"""
+"""Diagrama de dipersion"""
+plt.close()
+
+# Graficar dispersión con la recta de regresión
+plt.figure(figsize=(10, 6))
+
+# Usar seaborn para el gráfico de dispersión con recta de regresión
+sns.regplot(x="Humedad (x1)", y="Óxido Nitroso (y)", data=df, scatter_kws={'s':50}, line_kws={"color": "red", "lw": 2})
+
+# Añadir título y etiquetas
+plt.title("Gráfico de Dispersión con Recta de Regresión: Diferencias de Tukey", fontsize=14)
+plt.xlabel("Humedad (x1)", fontsize=12)
+plt.ylabel("Óxido Nitroso (y)", fontsize=12)
+
+# Mostrar el gráfico
+plt.show()
 
 """
 a = oxido_nitrosoy 
