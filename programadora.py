@@ -15,6 +15,8 @@ import itertools
 
 
 fig, ax = plt.subplots(1, 1)
+
+
 """Listas para almacenar los datos ingresados"""
 oxido_nitrosoy = []
 humedadx1 = []
@@ -265,12 +267,12 @@ medias = {
 
 # Lista de pares para comparar
 pares = [
-    ("Humedad", "Presión"),
+    ("Óxido Nitroso", "Humedad"),
+    ("Óxido Nitroso", "Temperatura"),
+    ("Óxido Nitroso", "Presión"),
     ("Humedad", "Temperatura"),
-    ("Humedad", "Óxido Nitroso"),
-    ("Presión", "Temperatura"),
-    ("Presión", "Óxido Nitroso"),
-    ("Temperatura", "Óxido Nitroso")
+    ("Humedad", "Presión"),
+    ("Temperatura", "Presión")
 ]
 
 
