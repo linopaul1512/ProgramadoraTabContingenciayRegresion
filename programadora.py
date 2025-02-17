@@ -245,10 +245,10 @@ num_grupos = t
 q = studentized_range.ppf( 1 - alfa, num_grupos, gl_error)
 
 # Calcular DHS
-hsd = q * np.sqrt(mce / nt_oxido_nitrosoy)  # Usamos uno de los n's (asumido igual para todos)
+dhs = q * np.sqrt(mce / nt_oxido_nitrosoy)  # Usamos uno de los n's (asumido igual para todos)
 print()
 print(f"Valor crítico q: {q}")
-print(f"Diferencia Honestamente Significativa (HSD): {hsd}")
+print(f"Diferencia Honestamente Significativa (HSD): {dhs}")
 
 
 
@@ -283,15 +283,15 @@ print("-" * 65)
 
 for g1, g2 in pares:
     meandiff = medias[g1] - medias[g2]  # Diferencia de medias
-    independencia = "Independiente" if meandiff > hsd or meandiff > -hsd else "Dependiente"
+    independencia = "Independiente" if meandiff > dhs or meandiff > -dhs else "Dependiente"
     
     # Mostrar los resultados en formato de tabla
-    print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{hsd:<10.4f}{independencia}")
+    print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{dhs:<10.4f}{independencia}")
 
 
 #Correlacion  y recta de regresion lineal
 
-
+ 
 
 
 
