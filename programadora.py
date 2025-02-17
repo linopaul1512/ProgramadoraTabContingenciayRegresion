@@ -2,10 +2,16 @@ import numpy as np
 import pandas as pd
 import scipy.stats  as stats
 import seaborn as sns
-from scipy.special import fdtr, studentized_range
+from scipy.stats import f
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import matplotlib.pyplot as plt
-
+from scipy.stats import studentized_range
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from scipy.stats import tukey_hsd
+import pingouin as pg
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+import itertools
 
 
 fig, ax = plt.subplots(1, 1)
@@ -14,6 +20,7 @@ oxido_nitrosoy = []
 humedadx1 = []
 temperaturax2 = []
 presionx3 = []
+
 
 """Funcion para pedir y tratar las listas"""
 def ingresar_listas(nombre):
@@ -229,46 +236,95 @@ else:
 print(f"Decisión: {decision}")
 
 """Prueba DHS"""
-fig, ax = plt.subplots(1, 1)
+# Número de grupos (columnas)
+num_grupos = t
 
-k, df = 3, 10
-x = np.linspace(studentized_range.ppf(0.01, k, df),
-                studentized_range.ppf(0.99, k, df), 100)
-ax.plot(x, studentized_range.pdf(x, k, df),
-        'r-', lw=5, alpha=nivel_significancia, label='studentized_range pdf')
+# Valor crítico q para HSD
+q = studentized_range.ppf( 1 - alfa, num_grupos, gl_error)
 
-
-# Crear el DataFrame con los datos ingresados
-df = pd.DataFrame({
-    "Óxido Nitroso (y)": oxido_nitrosoy,
-    "Humedad (x1)": humedadx1,
-    "Temperatura (x2)": temperaturax2,
-    "Presión (x3)": presionx3
-})
-
-# Convertir los datos a una sola lista con etiquetas de grupo
-data = []
-grupos = []
-
-for i, valores in enumerate([oxido_nitrosoy, humedadx1, temperaturax2, presionx3]):
-    data.extend(valores)
-    grupos.extend([f"Grupo {i+1}"] * len(valores))
+# Calcular DHS
+hsd = q * np.sqrt(mce / nt_oxido_nitrosoy)  # Usamos uno de los n's (asumido igual para todos)
+print()
+print(f"Valor crítico q: {q}")
+print(f"Diferencia Honestamente Significativa (HSD): {hsd}")
 
 
 
-# Aplicar la prueba de Tukey
-tukey = pairwise_tukeyhsd(endog=data, groups=grupos, alpha=1-nivel_significancia)
+"""Tukey """
 
-# Mostrar los resultados
-print("\n✅ Resultados de la prueba de Tukey")
-print(tukey)
+medias = [x_oxido_nitrosoy, x_humedadx1, x_temperaturax2, x_presionx3]
 
-# Calcular correlaciones entre las variables independientes y y (Óxido Nitroso)
-correlacion_x1 = stats.pearsonr(x1, y)[0]
-correlacion_x2 = stats.pearsonr(x2, y)[0]
-correlacion_x3 = stats.pearsonr(x3, y)[0]
+# Definir las medias de cada grupo
+medias = {
+    "Óxido Nitroso": x_oxido_nitrosoy,
+    "Humedad": x_humedadx1,
+    "Temperatura": x_temperaturax2,
+    "Presión": x_presionx3
+}
 
-print(f"Correlación Humedad - Óxido Nitroso: {correlacion_x1:.4f}")
-print(f"Correlación Temperatura - Óxido Nitroso: {correlacion_x2:.4f}")
-print(f"Correlación Presión - Óxido Nitroso: {correlacion_x3:.4f}")
 
+# Lista de pares para comparar
+pares = [
+    ("Humedad", "Presión"),
+    ("Humedad", "Temperatura"),
+    ("Humedad", "Óxido Nitroso"),
+    ("Presión", "Temperatura"),
+    ("Presión", "Óxido Nitroso"),
+    ("Temperatura", "Óxido Nitroso")
+]
+
+
+# Crear la tabla manualmente
+print("Comparación de Medias - Prueba de Tukey\n")
+print(f"{'Grupo 1':<15}{'Grupo 2':<15}{'Diferencia':<15}{'DHS':<10}{'Independencia'}")
+print("-" * 65)
+
+for g1, g2 in pares:
+    meandiff = medias[g1] - medias[g2]  # Diferencia de medias
+    independencia = "Independiente" if meandiff > hsd or meandiff > -hsd else "Dependiente"
+    
+    # Mostrar los resultados en formato de tabla
+    print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{hsd:<10.4f}{independencia}")
+
+
+
+"""
+a = oxido_nitrosoy 
+b  = humedadx1
+c = temperaturax2
+d = presionx3
+
+
+data = {
+    'Valor': a + b + c + d,
+    'Factor': ['Óxido Nitroso'] * len(a) +
+              ['Humedad'] * len(b) +
+              ['Temperatura'] * len(c) +
+              ['Presión'] * len(d)
+}
+
+df_tukey = pd.DataFrame(data)
+
+# Realizamos la prueba Tukey
+tukey_result = pairwise_tukeyhsd(df_tukey['Valor'], df_tukey['Factor'], alpha=nivel_significancia)
+
+# Mostrar el resumen de la prueba Tukey
+print("\nResumen de la prueba Tukey:")
+print(tukey_result.summary())
+
+
+# Mostrar un gráfico de los resultados de Tukey
+plt.figure(figsize=(8, 6))
+tukey_result.plot_simultaneous()
+plt.title("Comparación de medias con la prueba Tukey")
+plt.show()
+
+
+"""
+
+"""
+meandiff: Es la diferencia media entre los dos grupos. Si elstán comparando ( valor es positivo, el primer grupo tiene un valor promedio más alto que el segundo. Si es negativo, el primer grupo tiene un valor promedio más bajo.
+p-adj: Es el valor p ajustado, que muestra si la diferencia entre los grupos es estadísticamente significativa. Un valor de p pequeño (por debajo de 0.05, generalmente) indica que la diferencia es significativa.
+lower, upper: Son los límites del intervalo de confianza para la diferencia de medias. Esto muestra el rango en el que se espera que se encuentre la verdadera diferencia de medias con un nivel de confianza determinado.
+reject: Indica si se rechaza la hipótesis nula (es decir, si hay una diferencia estadísticamente significativa). Si el valor es "True", se rechaza la hipótesis nula y se concluye que hay una diferencia significativa entre los dos grupos.
+"""
