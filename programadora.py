@@ -276,7 +276,7 @@ pares = [
 ]
 
 
-# Crear la tabla manualmente
+# Crear la tabla 
 print("Comparación de Medias - Prueba de Tukey\n")
 print(f"{'Grupo 1':<15}{'Grupo 2':<15}{'Diferencia':<15}{'DHS':<10}{'Independencia'}")
 print("-" * 65)
@@ -288,7 +288,7 @@ for g1, g2 in pares:
     # Mostrar los resultados en formato de tabla
     print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{hsd:<10.4f}{independencia}")
 
-"""#Correlacion  y recta de regresion lineal
+"""#Correlacion  y recta de regresion lineal"""
 
 # Convertir las listas de entrada a arreglos de numpy
 X = np.array([humedadx1, temperaturax2, presionx3]).T  # Variables independientes
@@ -307,61 +307,4 @@ print(f"Coeficientes de la regresión (incluyendo el término independiente): {b
 # Calcular la correlación entre las variables independientes y la variable dependiente
 correlation_matrix = np.corrcoef(X[:, 1:], y)  # Excluimos la columna de unos para la correlación
 print(f"Correlación entre las variables independientes y dependientes:\n{correlation_matrix}")
-"""
-"""Diagrama de dipersion"""
-plt.close()
 
-# Graficar dispersión con la recta de regresión
-plt.figure(figsize=(10, 6))
-
-# Usar seaborn para el gráfico de dispersión con recta de regresión
-sns.regplot(x="Humedad (x1)", y="Óxido Nitroso (y)", data=df, scatter_kws={'s':50}, line_kws={"color": "red", "lw": 2})
-
-# Añadir título y etiquetas
-plt.title("Gráfico de Dispersión con Recta de Regresión: Diferencias de Tukey", fontsize=14)
-plt.xlabel("Humedad (x1)", fontsize=12)
-plt.ylabel("Óxido Nitroso (y)", fontsize=12)
-
-# Mostrar el gráfico
-plt.show()
-
-"""
-a = oxido_nitrosoy 
-b  = humedadx1
-c = temperaturax2
-d = presionx3
-
-
-data = {
-    'Valor': a + b + c + d,
-    'Factor': ['Óxido Nitroso'] * len(a) +
-              ['Humedad'] * len(b) +
-              ['Temperatura'] * len(c) +
-              ['Presión'] * len(d)
-}
-
-df_tukey = pd.DataFrame(data)
-
-# Realizamos la prueba Tukey
-tukey_result = pairwise_tukeyhsd(df_tukey['Valor'], df_tukey['Factor'], alpha=nivel_significancia)
-
-# Mostrar el resumen de la prueba Tukey
-print("\nResumen de la prueba Tukey:")
-print(tukey_result.summary())
-
-
-# Mostrar un gráfico de los resultados de Tukey
-plt.figure(figsize=(8, 6))
-tukey_result.plot_simultaneous()
-plt.title("Comparación de medias con la prueba Tukey")
-plt.show()
-
-
-"""
-
-"""
-meandiff: Es la diferencia media entre los dos grupos. Si elstán comparando ( valor es positivo, el primer grupo tiene un valor promedio más alto que el segundo. Si es negativo, el primer grupo tiene un valor promedio más bajo.
-p-adj: Es el valor p ajustado, que muestra si la diferencia entre los grupos es estadísticamente significativa. Un valor de p pequeño (por debajo de 0.05, generalmente) indica que la diferencia es significativa.
-lower, upper: Son los límites del intervalo de confianza para la diferencia de medias. Esto muestra el rango en el que se espera que se encuentre la verdadera diferencia de medias con un nivel de confianza determinado.
-reject: Indica si se rechaza la hipótesis nula (es decir, si hay una diferencia estadísticamente significativa). Si el valor es "True", se rechaza la hipótesis nula y se concluye que hay una diferencia significativa entre los dos grupos.
-"""
