@@ -12,7 +12,7 @@ from scipy.stats import tukey_hsd
 import pingouin as pg
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import itertools
-
+from itertools import combinations
 
 fig, ax = plt.subplots(1, 1)
 
@@ -277,6 +277,8 @@ pares = [
 
 
 # Crear la tabla 
+independientes = []
+
 print("Comparación de Medias - Prueba de Tukey\n")
 print(f"{'Grupo 1':<15}{'Grupo 2':<15}{'Diferencia':<15}{'DHS':<10}{'Independencia'}")
 print("-" * 65)
@@ -288,10 +290,29 @@ for g1, g2 in pares:
     # Mostrar los resultados en formato de tabla
     print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{dhs:<10.4f}{independencia}")
 
-
-#Correlacion  y recta de regresion lineal
+    #Guardar ebn group1 y group 2 solo las variables indeoendientes
+    if independencia == "Independiente":
+        independientes.append((g1, g2))
 
  
+
+# Cálculo de correlación y regresión solo para las variables independientes
+print("\nCálculo de correlación y regresión para variables independientes:\n")
+for g1, g2 in independientes:
+    x = df[g1]
+    y = df[g2]
+    
+    # Cálculo de correlación
+    correlacion = np.corrcoef(x, y)[0, 1]
+    
+    # Ajuste de regresión
+    X = sm.add_constant(x)
+    modelo = sm.OLS(y, X).fit()
+    a, b = modelo.params
+    
+    print(f"Variables: {g1} y {g2}")
+    print(f"Correlación: {correlacion:.4f}")
+    print(f"Ecuación de regresión: y = {a:.4f} + {b:.4f}x\n")
 
 
 
