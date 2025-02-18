@@ -245,10 +245,10 @@ num_grupos = t
 q = studentized_range.ppf( 1 - alfa, num_grupos, gl_error)
 
 # Calcular DHS
-dhs = q * np.sqrt(mce / nt_oxido_nitrosoy)  # Usamos uno de los n's (asumido igual para todos)
+hsd = q * np.sqrt(mce / nt_oxido_nitrosoy)  # Usamos uno de los n's (asumido igual para todos)
 print()
 print(f"Valor crítico q: {q}")
-print(f"Diferencia Honestamente Significativa (HSD): {dhs}")
+print(f"Diferencia Honestamente Significativa (HSD): {hsd}")
 
 
 
@@ -285,17 +285,62 @@ print("-" * 65)
 
 for g1, g2 in pares:
     meandiff = medias[g1] - medias[g2]  # Diferencia de medias
-    independencia = "Independiente" if meandiff > dhs or meandiff > -dhs else "Dependiente"
+    independencia = "Independiente" if meandiff > hsd or meandiff > -hsd else "Dependiente"
     
     # Mostrar los resultados en formato de tabla
-    print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{dhs:<10.4f}{independencia}")
+    print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{hsd:<10.4f}{independencia}")
 
-    #Guardar ebn group1 y group 2 solo las variables indeoendientes
-    if independencia == "Independiente":
-        independientes.append((g1, g2))
+    
 
- 
 
+tab = pd.DataFrame({
+                "Humedad": humedadx1,
+                "Presion": presionx3
+            })
+
+
+#Σxt sumatorias de los elementos de cada columna
+Σxt_x = sum(humedadx1)
+Σxt_y  = sum(presionx3)
+
+print(f"Σyt: {round(Σxt_x, 4)}, Σxt: {round(Σxt_y, 4)} ")
+
+Σxt_2col = sum([Σxt_x, Σxt_y])
+
+print ("Σxt", round(Σxt_2col, 4))
+
+
+
+#Sumatorias de los elementos elevados al cuadrado
+Σxt2_x = sum([elemento ** 2 for elemento in humedadx1])
+Σxt2_y = sum([elemento ** 2 for elemento in presionx3])
+
+print(f" Σyt²: {round(Σxt2_x, 4)}, Σxt²: {round(Σxt2_y, 4)}")
+
+
+Σxt2_2col = sum([Σxt2_x, Σxt2_y])
+
+print ("Σxt²: ", round(Σxt2_2col, 4))
+    
+
+
+#Sumatorias de las multiplicaciones de cada elemento de x multiplicado por y
+                                  
+Σxpory = humedadx1 * presionx3
+
+print(f" Σtx*y: ",Σxpory)
+
+Σxpory_2col = sum(Σxpory)
+
+print ("Σtx*y: ", round(Σxpory_2col, 4))
+
+# Calculo la correlacion para ambos pares
+correlacion_humedad_presion = df["Humedad"].corr(df["Presion"])
+
+print(f"Correlación (Humedad vs Presión): {round(correlacion_humedad_presion, 4)}")
+
+
+"""
 # Cálculo de correlación y regresión solo para las variables independientes
 print("\nCálculo de correlación y regresión para variables independientes:\n")
 for g1, g2 in independientes:
@@ -314,5 +359,4 @@ for g1, g2 in independientes:
     print(f"Correlación: {correlacion:.4f}")
     print(f"Ecuación de regresión: y = {a:.4f} + {b:.4f}x\n")
 
-
-
+"""
