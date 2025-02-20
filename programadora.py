@@ -9,8 +9,7 @@ from scipy.stats import studentized_range
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 from scipy.stats import tukey_hsd
-import pingouin as pg
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
+#import pingouin as pg
 import itertools
 from itertools import combinations
 
@@ -276,87 +275,67 @@ pares = [
 ]
 
 
-# Crear la tabla 
+ind_vars = df.columns
+
+# Construir el diccionario de medias a partir de los nombres reales del DataFrame:
+medias = {col: df[col].mean() for col in ind_vars}
+pares = list(combinations(ind_vars, 2))
+
 independientes = []
 
 print("Comparación de Medias - Prueba de Tukey\n")
 print(f"{'Grupo 1':<15}{'Grupo 2':<15}{'Diferencia':<15}{'DHS':<10}{'Independencia'}")
-print("-" * 65)
+print("-" * 80)
+
+
 
 for g1, g2 in pares:
-    meandiff = medias[g1] - medias[g2]  # Diferencia de medias
-    independencia = "Independiente" if meandiff > hsd or meandiff > -hsd else "Dependiente"
+    diff = medias[g1] - medias[g2]
+
+    if diff > hsd:  
+        estado = "Independiente"
+        independientes.append((g1, g2))
+    else:
+        estado = "Dependiente"
+
+    # Imprimir resultado en la tabla
+    print(f"{g1:<20}{g2:<20}{diff:<15.4f}{hsd:<10.4f}{estado}")
+
+print("\nPares identificados como independientes:", independientes)
+
+
     
-    # Mostrar los resultados en formato de tabla
-    print(f"{g1:<15}{g2:<15}{meandiff:<15.4f}{hsd:<10.4f}{independencia}")
-
-    
-
-
-tab = pd.DataFrame({
-                "Humedad": humedadx1,
-                "Presion": presionx3
-            })
-
-
-#Σxt sumatorias de los elementos de cada columna
-Σxt_x = sum(humedadx1)
-Σxt_y  = sum(presionx3)
-
-print(f"Σyt: {round(Σxt_x, 4)}, Σxt: {round(Σxt_y, 4)} ")
-
-Σxt_2col = sum([Σxt_x, Σxt_y])
-
-print ("Σxt", round(Σxt_2col, 4))
-
-
-
-#Sumatorias de los elementos elevados al cuadrado
-Σxt2_x = sum([elemento ** 2 for elemento in humedadx1])
-Σxt2_y = sum([elemento ** 2 for elemento in presionx3])
-
-print(f" Σyt²: {round(Σxt2_x, 4)}, Σxt²: {round(Σxt2_y, 4)}")
-
-
-Σxt2_2col = sum([Σxt2_x, Σxt2_y])
-
-print ("Σxt²: ", round(Σxt2_2col, 4))
-    
-
-
-#Sumatorias de las multiplicaciones de cada elemento de x multiplicado por y
-                                  
-Σxpory = humedadx1 * presionx3
-
-print(f" Σtx*y: ",Σxpory)
-
-Σxpory_2col = sum(Σxpory)
-
-print ("Σtx*y: ", round(Σxpory_2col, 4))
-
-# Calculo la correlacion para ambos pares
-correlacion_humedad_presion = df["Humedad"].corr(df["Presion"])
-
-print(f"Correlación (Humedad vs Presión): {round(correlacion_humedad_presion, 4)}")
-
-
-"""
-# Cálculo de correlación y regresión solo para las variables independientes
-print("\nCálculo de correlación y regresión para variables independientes:\n")
-for g1, g2 in independientes:
-    x = df[g1]
-    y = df[g2]
-    
-    # Cálculo de correlación
-    correlacion = np.corrcoef(x, y)[0, 1]
-    
-    # Ajuste de regresión
-    X = sm.add_constant(x)
-    modelo = sm.OLS(y, X).fit()
-    a, b = modelo.params
-    
-    print(f"Variables: {g1} y {g2}")
-    print(f"Correlación: {correlacion:.4f}")
-    print(f"Ecuación de regresión: y = {a:.4f} + {b:.4f}x\n")
-
-"""
+if independientes:
+    print("\nCálculo de correlación y regresión para pares independientes:\n")
+    for g1, g2 in independientes:
+        print(f"Análisis entre {g1} y {g2}:")
+        x = df[g1]
+        y = df[g2]
+        
+        # Crear una tabla (DataFrame) de las muestras para este par
+        tab = pd.DataFrame({"x": x, 
+                            "y": y})
+        print("Tabla de datos:")
+        print(tab)
+        
+        # Calcular sumatorias necesarias (como ejemplo, se hacen para x y y del par actual)
+        sum_x = x.sum()
+        sum_y = y.sum()
+        sum_x2 = np.sum(x**2)
+        sum_y2 = np.sum(y**2)
+        sum_xy = np.sum(x * y)
+        
+        print(f"Σx: {sum_x:.4f}, Σy: {sum_y:.4f}")
+        print(f"Σx²: {sum_x2:.4f}, Σy²: {sum_y2:.4f}, Σxy: {sum_xy:.4f}")
+        
+        # Calcular correlación (coeficiente de Pearson)
+        correlacion = np.corrcoef(x, y)[0, 1]
+        print(f"Coeficiente de correlación: {correlacion:.4f}")
+        
+        # Ajuste de regresión lineal mediante OLS (método de matrices)
+        X = sm.add_constant(x)  # Añade la columna de 1's para el intercepto
+        modelo = sm.OLS(y, X).fit()
+        intercepto, coef_x = modelo.params
+        print(f"Ecuación de regresión: {g2} = {intercepto:.4f} + {coef_x:.4f} * {g1}\n")
+else:
+    print("No se encontraron pares independientes (diferencia > DHS).")
