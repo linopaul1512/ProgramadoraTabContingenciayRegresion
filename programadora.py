@@ -9,21 +9,20 @@ from scipy.stats import studentized_range
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 from scipy.stats import tukey_hsd
-#import pingouin as pg
 import itertools
 from itertools import combinations
+
 
 fig, ax = plt.subplots(1, 1)
 
 
-"""Listas para almacenar los datos ingresados"""
+#Listas para almacenar los datos ingresados
 oxido_nitrosoy = []
 humedadx1 = []
 temperaturax2 = []
 presionx3 = []
 
-
-"""Funcion para pedir y tratar las listas"""
+#Funcion para pedir y tratar las listas
 def ingresar_listas(nombre):
     while True:
         valores = input(f"Ingrese los valores de {nombre} separados por comas: ").strip()
@@ -39,25 +38,25 @@ def ingresar_listas(nombre):
 print("\n🔹 Ingrese los valores fila por fila.")
 
 
-"""Consola de usuario"""
+#Consola de usuario
 y = ingresar_listas("y (Óxido nitroso)")
 x1 = ingresar_listas("x1 (Humedad)")
 x2 = ingresar_listas("x2 (Temperatura)")
 x3 = ingresar_listas("x3 (Presión)")
 
 
-"""Agregar los valores a las listas"""
+#Agregar los valores a las listas
 oxido_nitrosoy.extend(y)
 humedadx1.extend(x1)
 temperaturax2.extend(x2)
 presionx3.extend(x3)
 
 
-"""Determinar automáticamente el número de columnas (t)"""
+#Determinar automáticamente el número de columnas (t)
 columnas = [oxido_nitrosoy, humedadx1, temperaturax2, presionx3]
 t = len(columnas)
 
-"""Solicitar el nivel de significancia después del ingreso de datos"""
+#Solicitar el nivel de significancia después del ingreso de datos
 while True:
     try:
         nivel_significancia = float(input("\n🔹 Ingrese el nivel de significancia (ejemplo: 95 para 95%): "))
@@ -74,16 +73,16 @@ print(f"\n✅ Nivel de significancia ingresado: {nivel_significancia}")
 print("\n✅ Datos ingresados correctamente. Próximamente se mostrarán los resultados.")
 
 
-""" Verificar que todas las listas tengan la misma cantidad de elementos """
+#Verificar que todas las listas tengan la misma cantidad de elementos
 min_length = min(len(y), len(x1), len(x2), len(x3))
 
-""" Ajustar las listas para que tengan el mismo tamaño """
+#Ajustar las listas para que tengan el mismo tamaño
 y = y[:min_length]
 x1 = x1[:min_length]
 x2 = x2[:min_length]
 x3 = x3[:min_length]
 
-""" Crear DataFrame con pandas """
+#crar tabla de datos ingresados
 df = pd.DataFrame({
     "Óxido Nitroso (y)": y,
     "Humedad (x1)": x1,
@@ -93,7 +92,7 @@ df = pd.DataFrame({
 
 print(df)
 
-"""Σxt sumatorias de los elementos de cada columna"""
+#Σxt sumatorias de los elementos de cada columna
 Σxt_oxido_nitrosoy = sum(oxido_nitrosoy)
 Σxt_humedadx1  = sum(humedadx1)
 Σxt_temperaturax2  = sum(temperaturax2)
@@ -106,7 +105,7 @@ print(f"Σyt: {round(Σxt_oxido_nitrosoy, 4)}, Σx1t humedadx1: {round(Σxt_hume
 print ("Σxt", round(Σxt_4col, 4))
 
 
-"""Sumatorias de los elementos elevados al cuadrado"""
+#Sumatorias de los elementos elevados al cuadrado
 Σxt2_oxido_nitrosoy = sum([elemento ** 2 for elemento in oxido_nitrosoy])
 Σxt2_humedadx1 = sum([elemento ** 2 for elemento in humedadx1])
 Σxt2_temperaturax2 = sum([elemento ** 2 for elemento in temperaturax2])
@@ -120,7 +119,7 @@ print(f" Σyt²: {round(Σxt2_oxido_nitrosoy, 4)}, Σx1t humedadx1: {round(Σxt2
 print ("Σxt²: ", round(Σxt2_4col, 4))
   
 
-"""Sumatorias de las sumas de los lementos de las muestras elevado al cuadrado"""
+#Sumatorias de las sumas de los lementos de las muestras elevado al cuadrado
 Σxtcua_oxido_nitrosoy =  sum(oxido_nitrosoy)  ** 2
 Σxtcua_humedadx1  = sum(humedadx1) ** 2
 Σxtcua_temperaturax2  =  sum(temperaturax2) ** 2
@@ -132,7 +131,7 @@ print(f" (Σyt)²: {round(Σxtcua_oxido_nitrosoy, 4)}, Σx1t humedadx1: {round(�
 
 print ("(Σxt)²: ", round(Σxtcua_4col, 4))
 
-"""Sumatoria de la cantidad de elementos por columna"""
+#Sumatoria de la cantidad de elementos por columna
 nt_oxido_nitrosoy = len(oxido_nitrosoy)
 nt_humedadx1 =  len(humedadx1)
 nt_temperaturax2 = len(temperaturax2)
@@ -144,7 +143,7 @@ print(f" nty: {nt_oxido_nitrosoy}, ntx1: {round(nt_humedadx1)}, ntx2: {nt_temper
 
 print ("Σnt: ", Σnt_4col)
 
-"""Sumatorias de los elementos elevados al cuadrado divido entre n (cantidad de elementos)"""
+#Sumatorias de los elementos elevados al cuadrado divido entre n (cantidad de elementos)
 ΣxtcuaN_oxido_nitrosoy =  Σxtcua_oxido_nitrosoy /nt_oxido_nitrosoy
 ΣxtcuaN_humedadx1  = Σxtcua_humedadx1 / nt_humedadx1
 ΣxtcuaN_temperaturax2  = Σxtcua_temperaturax2 / nt_temperaturax2
@@ -156,7 +155,7 @@ print(f" (Σyt)²/n: {round(ΣxtcuaN_oxido_nitrosoy, 4)}, (Σx1t)²/n: {round(Σ
 ΣxtcuaN_4col = sum([ΣxtcuaN_oxido_nitrosoy, ΣxtcuaN_humedadx1, ΣxtcuaN_temperaturax2, ΣxtcuaN_presionx3])
 print (" (Σxt)²/n: ", ΣxtcuaN_4col)
 
-"""Sumatoria de las media aritmeticas"""
+#Sumatoria de las media aritmeticas
 x_oxido_nitrosoy = Σxt_oxido_nitrosoy / nt_oxido_nitrosoy
 x_humedadx1 = Σxt_humedadx1 / nt_humedadx1
 x_temperaturax2 = Σxt_temperaturax2 / nt_temperaturax2
@@ -167,48 +166,48 @@ print(f" x̅y: {round(x_oxido_nitrosoy, 4)}, x̅x1: {round(x_humedadx1, 4)}, x̅
 x_4col = sum([x_oxido_nitrosoy, x_humedadx1, x_temperaturax2, x_presionx3])
 print ("x̅: ", round(x_4col))
 
-"""Calcular nivel de significancia"""
+#Calcular nivel de significancia
 alfa = 1 - nivel_significancia
 print(f"α (alfa):" , round(alfa, 4))
 
-"""grados de libertad del tratamiento"""
+#grados de libertad del tratamiento
 gl_tratamiento =   t -1
 print(f"gl(tratamiento):" , gl_tratamiento)
 
-"""grados de libertad del error"""
+#grados de libertad del error
 gl_error = Σnt_4col - t
 print(f"gl(error):" , round(gl_error, 4))
 
-"""Factor de correcion"""
+#Factor de correcion
 c =  Σxt_4col ** 2  / Σnt_4col
 print(f"Factor de correcion (C):" , round(c, 4))
 
-"""Suma Total de Cuadradados"""
+#Suma Total de Cuadradados
 sct = Σxt2_4col - c
 print(f"Suma Total de Cuadrados (SCT):" , round(sct, 4))
 
-"""Suma Cuadradada de Tratamiento"""
+#Suma Cuadradada de Tratamiento
 sctr = ΣxtcuaN_4col - c
 print(f"Suma Cuadradada de Tratamiento (SCTR):" , round(sctr, 4))
 
-"""Suma Cuadradada de error"""
+#Suma Cuadradada de error
 sce = Σxt2_4col - ΣxtcuaN_4col
 print(f"Suma Cuadradada de Error (SCE):" , round(sce, 4))
 
-"""n - 1"""
+#n - 1
 nmenos1 = Σnt_4col - 1
 
-"""MCTR"""
+#MCTR
 mctr = sctr / gl_tratamiento
 
-"""MCE"""
+#MCE
 mce = sce / gl_error
 
-"""F(RV) Fisher razón de variacion"""
+#F(RV) Fisher razón de variacion
 f_rv = mctr / mce
 
 
-""" Crear DataFrame con pandas de la fuente de variacion"""
+#Crear DataFrame con pandas de la fuente de variacion
 
 fuente_variacion = pd.DataFrame({
     "Fuentes de variacion": ["Tratamiento", "Error", "Total"],
@@ -223,11 +222,11 @@ print(fuente_variacion)
 
 
 
-"""Buscar F tabulada """
+#Buscar F tabulada 
 Ftab = stats.f.ppf(1 - alfa, gl_tratamiento, gl_error)
 print(f"F tabulada: {round(Ftab, 4)}")
 
-"""Comparación y decision"""
+#Comparación y decision
 print("[Si  Fcal > Ftab = RR]" , "Fcalc < Ftab = RA")
 if f_rv > Ftab:
     decision = "Rechazar H₀ (Existe diferencia significativa)"
@@ -236,7 +235,7 @@ else:
 
 print(f"Decisión: {decision}")
 
-"""Prueba DHS"""
+#Prueba DHS
 # Número de grupos (columnas)
 num_grupos = t
 
@@ -251,7 +250,7 @@ print(f"Diferencia Honestamente Significativa (HSD): {hsd}")
 
 
 
-"""Tukey """
+#Tukey 
 
 medias = [x_oxido_nitrosoy, x_humedadx1, x_temperaturax2, x_presionx3]
 
@@ -301,7 +300,6 @@ for g1, g2 in pares:
     # Imprimir resultado en la tabla
     print(f"{g1:<20}{g2:<20}{diff:<15.4f}{hsd:<10.4f}{estado}")
 
-print("\nPares identificados como independientes:", independientes)
 
 
     
@@ -312,13 +310,13 @@ if independientes:
         x = df[g1]
         y = df[g2]
         
-        # Crear una tabla (DataFrame) de las muestras para este par
+        # Crear una tabla (DataFrame) del par
         tab = pd.DataFrame({"x": x, 
                             "y": y})
         print("Tabla de datos:")
         print(tab)
         
-        # Calcular sumatorias necesarias (como ejemplo, se hacen para x y y del par actual)
+        # Sumatorias
         sum_x = x.sum()
         sum_y = y.sum()
         sum_x2 = np.sum(x**2)
@@ -328,14 +326,70 @@ if independientes:
         print(f"Σx: {sum_x:.4f}, Σy: {sum_y:.4f}")
         print(f"Σx²: {sum_x2:.4f}, Σy²: {sum_y2:.4f}, Σxy: {sum_xy:.4f}")
         
-        # Calcular correlación (coeficiente de Pearson)
-        correlacion = np.corrcoef(x, y)[0, 1]
-        print(f"Coeficiente de correlación: {correlacion:.4f}")
-        
-        # Ajuste de regresión lineal mediante OLS (método de matrices)
-        X = sm.add_constant(x)  # Añade la columna de 1's para el intercepto
-        modelo = sm.OLS(y, X).fit()
-        intercepto, coef_x = modelo.params
-        print(f"Ecuación de regresión: {g2} = {intercepto:.4f} + {coef_x:.4f} * {g1}\n")
-else:
+        # Calcular correlación 
+        n = len(x)
+
+        # Sumatorias
+        Σx = sum(x)
+        Σy = sum(y)
+        Σxy = sum(xi * yi for xi, yi in zip(x, y))
+        Σx2 = sum(xi ** 2 for xi in x)
+        Σy2 = sum(yi ** 2 for yi in y)
+
+        # Media de x y y
+        x̄ = Σx / n
+        ȳ = Σy / n
+
+        # Coeficiente de correlación de Pearson
+        numerador_r = (n * Σxy) - (Σx * Σy)
+        denominador_r = ((n * Σx2 - Σx ** 2) * (n * Σy2 - Σy ** 2)) ** 0.5
+        r = numerador_r / denominador_r if denominador_r != 0 else 0
+
+        print(f"Coeficiente de correlación: {r:.4f}")
+
+        # Cálculo de la pendiente (b) y la intersección (a)
+        b = numerador_r / (n * Σx2 - Σx ** 2) if (n * Σx2 - Σx ** 2) != 0 else 0
+        a = ȳ - (b * x̄)
+
+        print(f"Ecuación de regresión: {g2} = {a:.4f} + {b:.4f} * {g1}\n")
+
     print("No se encontraron pares independientes (diferencia > DHS).")
+
+#Tabla de Regresion multiple
+dfmultiple = pd.DataFrame({
+    "Óxido Nitroso (y)": y,
+    "Humedad (x1)": x1,
+    "Temperatura (x2)": x2,
+    "Presión (x3)": x3,
+    "y^2": np.square(y),
+    "x1^2": np.square(x1),
+    "x2^2": np.square(x2),
+    "x3^2": np.square(x3),
+    "(x2^2)^2": np.square(np.square(x2)),
+    "y*x1": np.multiply(y, x1),
+    "y*x2": np.multiply(y, x2),
+    "y*x3": np.multiply(y, x3),
+    "x1*x2": np.multiply(x1, x2),
+    "x2*x3": np.multiply(x2, x3),
+    "x1*x3": np.multiply(x1, x3)
+})
+
+
+sumatorias = dfmultiple.sum()
+dfmultiple.loc["-------------"] = ["-" * 10] * dfmultiple.shape[1]
+dfmultiple.loc["Σ"] = sumatorias
+
+print("\nTabla de Contingencia con Datos Calculados:")
+print(dfmultiple)
+
+# Matriz para regresión múltiple
+X = np.column_stack((np.ones(len(x1)), x1, x2, x3))  
+y = np.array(y)
+
+# Calcular coeficientes 
+X_transpuesta = X.T
+beta = np.linalg.pinv(X_transpuesta @ X) @ X_transpuesta @ y
+
+
+print("\nEcuación de Regresión Múltiple:")
+print(f"y = {beta[0]:.4f} + {beta[1]:.4f}*x1 + {beta[2]:.4f}*x2 + {beta[3]:.4f}*x3")
