@@ -11,7 +11,7 @@ from statsmodels.formula.api import ols
 from scipy.stats import tukey_hsd
 import itertools
 from itertools import combinations
-
+from tabulate import tabulate
 
 fig, ax = plt.subplots(1, 1)
 
@@ -365,7 +365,6 @@ dfmultiple = pd.DataFrame({
     "x1^2": np.square(x1),
     "x2^2": np.square(x2),
     "x3^2": np.square(x3),
-    "(x2^2)^2": np.square(np.square(x2)),
     "y*x1": np.multiply(y, x1),
     "y*x2": np.multiply(y, x2),
     "y*x3": np.multiply(y, x3),
@@ -374,22 +373,78 @@ dfmultiple = pd.DataFrame({
     "x1*x3": np.multiply(x1, x3)
 })
 
-
+# Calcular las sumatorias
 sumatorias = dfmultiple.sum()
+
+# Agregar la fila de sumatorias al DataFrame
+dfmultiple.loc["Σ"] = sumatorias
+
+sumatorias = dfmultiple.loc["Σ"] 
 dfmultiple.loc["-------------"] = ["-" * 10] * dfmultiple.shape[1]
 dfmultiple.loc["Σ"] = sumatorias
 
+# Mostrar el DataFrame con las sumatorias
 print("\nTabla de Contingencia con Datos Calculados:")
 print(dfmultiple)
 
-# Matriz para regresión múltiple
-X = np.column_stack((np.ones(len(x1)), x1, x2, x3))  
-y = np.array(y)
-
-# Calcular coeficientes 
-X_transpuesta = X.T
-beta = np.linalg.pinv(X_transpuesta @ X) @ X_transpuesta @ y
 
 
-print("\nEcuación de Regresión Múltiple:")
-print(f"y = {beta[0]:.4f} + {beta[1]:.4f}*x1 + {beta[2]:.4f}*x2 + {beta[3]:.4f}*x3")
+
+
+def gauss_jordan(A, B):
+    AB = np.hstack([A, B.reshape(-1, 1)])  # Matriz ampliada [A|B]
+    n = len(B)
+    
+    for i in range(n):
+        # Hacer el pivote 1
+        AB[i] = AB[i] / AB[i, i]
+        
+        
+        for j in range(n):
+            if i != j:
+                AB[j] = AB[j] - AB[j, i] * AB[i]
+    
+    return AB[:, -1]  
+
+
+def calcular_regresion(dfmultiple):
+    # Acceder a la fila de sumatorias correctamente
+    sumatorias = dfmultiple.loc["Σ"]  # Cambia "Σxt" por "Σ"
+    n = len(dfmultiple) - 1  # Número de observaciones (excluyendo la fila de sumatorias)
+    
+    # Construir la matriz A y el vector B
+    A = np.array([
+        [n, sumatorias["Humedad (x1)"], sumatorias["Temperatura (x2)"]],
+        [sumatorias["Humedad (x1)"], sumatorias["x1^2"], sumatorias["x1*x2"]],
+        [sumatorias["Temperatura (x2)"], sumatorias["x1*x2"], sumatorias["x2^2"]]
+    ])
+    
+    # Verificar si la matriz A es invertible
+    det_A = np.linalg.det(A)
+    if np.isclose(det_A, 0):
+        raise ValueError("La matriz A no es invertible (det(A) = 0). El sistema no tiene solución única.")
+    
+    # Vector B
+    B = np.array([
+        sumatorias["Óxido Nitroso (y)"],
+        sumatorias["y*x1"],
+        sumatorias["y*x2"]
+    ])
+    
+    # Mostrar la matriz ampliada [A|B]
+    print("Matriz ampliada [A|B]:")
+    print(tabulate(np.hstack([A, B.reshape(-1, 1)]), headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
+    
+    # Resolver el sistema usando Gauss-Jordan
+    resultados = gauss_jordan(A, B)
+    
+    # Mostrar resultados
+    print("\nResultados:")
+    print(f"B0 = {resultados[0]:.4f}")
+    print(f"B1 = {resultados[1]:.4f}")
+    print(f"B2 = {resultados[2]:.4f}")
+    
+    return resultados
+
+# Calcular los coeficientes de regresión
+coeficientes = calcular_regresion(dfmultiple)
