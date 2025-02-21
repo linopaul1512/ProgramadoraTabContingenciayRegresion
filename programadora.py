@@ -431,7 +431,7 @@ def gauss_jordan(A, B):
     return AB 
 
 
-def calcular_regresion(dfmultiple):
+def determinar_regresion(dfmultiple):
     try:
         sumatorias = dfmultiple.loc["Σ"]
         n = nt_humedadx1  # Considerando que todas tienen la misma longitud
@@ -487,4 +487,4 @@ def calcular_regresion(dfmultiple):
 
 
 # Calcular los coeficientes de regresión
-coeficientes = calcular_regresion(dfmultiple)
+coeficientes = determinar_regresion(dfmultiple)
