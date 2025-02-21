@@ -353,6 +353,23 @@ if independientes:
 
         print(f"Ecuación de regresión: {g2} = {a:.4f} + {b:.4f} * {g1}\n")
 
+
+        # Crear el diagrama de dispersión con la recta de regresión
+        plt.figure(figsize=(8, 6))  
+        plt.scatter(x, y, color='blue', label='Datos')  # Puntos de dispersión
+        plt.plot(x, a + b * x, color='red', label=f'Recta de regresión: {g2} = {a:.4f} + {b:.4f} * {g1}')  # Recta de regresión
+        plt.title(f"Diagrama de dispersión y regresión lineal: {g1} vs {g2}")  # Título
+        plt.xlabel(f'{g1}')
+        plt.ylabel(f'{g2}')
+        plt.legend() 
+        plt.grid(True) 
+        plt.show()  
+
+
+        
+
+     
+else:
     print("No se encontraron pares independientes (diferencia > DHS).")
 
 #Tabla de Regresion multiple
@@ -403,7 +420,7 @@ print(f"Σx1*x3: {round(sumatorias['x1*x3'], 4)}")
 def gauss_jordan(A, B):
     AB = np.hstack([A, B.reshape(-1, 1)])  # Matriz ampliada [A|B]
     n = len(B)
-    
+    #hstack apila matrices en secuencia horizontalmente (columna por columna).
     for i in range(n):
         AB[i] = AB[i] / AB[i, i]
         
@@ -445,7 +462,7 @@ def calcular_regresion(dfmultiple):
         # Asignamos a una variable el resultado del metodo gauss con los valores de A y B
         matriz_final = gauss_jordan(A, B)
 
-        # Mostrar la matriz final (Identidad | Resultados)
+        # Mostrar la matriz final
         print("\nMatriz final:")
         print(tabulate(matriz_final, headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
 
