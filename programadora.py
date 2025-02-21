@@ -400,69 +400,74 @@ print(f"Σx1*x2: {round(sumatorias['x1*x2'], 4)}")
 print(f"Σx2*x3: {round(sumatorias['x2*x3'], 4)}")
 print(f"Σx1*x3: {round(sumatorias['x1*x3'], 4)}")
 
-
-
-
-
 def gauss_jordan(A, B):
     AB = np.hstack([A, B.reshape(-1, 1)])  # Matriz ampliada [A|B]
     n = len(B)
     
     for i in range(n):
-        # Hacer el pivote 1
         AB[i] = AB[i] / AB[i, i]
         
-        
+        # Hacer ceros en las demás filas
         for j in range(n):
             if i != j:
                 AB[j] = AB[j] - AB[j, i] * AB[i]
-    
-    return AB[:, -1]  
+    return AB 
 
 
 def calcular_regresion(dfmultiple):
     try:
-        # Acceder a la fila de sumatorias correctamente
-        sumatorias = dfmultiple.loc["Σ"]  
-        n = nt_humedadx1
-        #Colocamos nt de oxido asumiendo que las columnas miden lo mismo
-        # Construir la matriz A y el vector B
+        sumatorias = dfmultiple.loc["Σ"]
+        n = nt_humedadx1  # Considerando que todas tienen la misma longitud
+
+        # Construir la matriz A
         A = np.array([
             [n, sumatorias["Temperatura (x2)"], sumatorias["Presión (x3)"]],
             [sumatorias["Temperatura (x2)"], sumatorias["x2^2"], sumatorias["x2*x3"]],
             [sumatorias["Presión (x3)"], sumatorias["x2*x3"], sumatorias["x3^2"]]
         ])
-        
+
         # Verificar si la matriz A es invertible
         det_A = np.linalg.det(A)
         if np.isclose(det_A, 0):
             raise ValueError("La matriz A no es invertible (det(A) = 0). El sistema no tiene solución única.")
-        
+
         # Vector B
         B = np.array([
             sumatorias["Humedad (x1)"],
             sumatorias["x1*x2"],
             sumatorias["x1*x3"]
         ])
-                                     
-        
+
         # Mostrar la matriz ampliada [A|B]
-        print("Matriz ampliada [A|B]:")
+        print("\nMatriz ampliada [A|B]:")
         print(tabulate(np.hstack([A, B.reshape(-1, 1)]), headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
-        
-        # Resolver el sistema usando Gauss-Jordan
-        resultados = gauss_jordan(A, B)
-        
+
+        # Asignamos a una variable el resultado del metodo gauss con los valores de A y B
+        matriz_final = gauss_jordan(A, B)
+
+        # Mostrar la matriz final (Identidad | Resultados)
+        print("\nMatriz final:")
+        print(tabulate(matriz_final, headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
+
+        # Extraer los resultados de la última columna
+        resultados = matriz_final[:, -1]
+
         # Mostrar resultados
         print("\nResultados:")
-        print(f"B0 = {resultados[0]:.4f}")
-        print(f"B1 = {resultados[1]:.4f}")
-        print(f"B2 = {resultados[2]:.4f}")
-        
+        print(f"β0 = {resultados[0]:.4f}")
+        print(f"β1 = {resultados[1]:.4f}")
+        print(f"β2 = {resultados[2]:.4f}")
+
+        #Recta
+        print("Recta de regresión múltiple")
+        print("y = β + β1 + x2")
+        print(f" y = β0{resultados[0]:.4f} + β1{resultados[1]:.4f} + β2{resultados[2]:.4f} x2")
+
         return resultados
     except Exception as e:
         print(f"Error al calcular la regresión: {e}")
         return None
+
 
 # Calcular los coeficientes de regresión
 coeficientes = calcular_regresion(dfmultiple)
