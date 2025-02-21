@@ -482,7 +482,7 @@ def determinar_regresion(dfmultiple):
 
         return resultados
     except Exception as e:
-        print(f"La matriz nmo es inversible: {e}")
+        print(f"La matriz no es inversible: {e}")
         return None
 
 
