@@ -355,7 +355,7 @@ if independientes:
 
 
         # Crear el diagrama de dispersión con la recta de regresión
-        plt.figure(figsize=(8, 6))  
+        #plt.figure(figsize=(8, 6))  
         plt.scatter(x, y, color='blue', label='Datos')  # Puntos de dispersión
         plt.plot(x, a + b * x, color='red', label=f'Recta de regresión: {g2} = {a:.4f} + {b:.4f} * {g1}')  # Recta de regresión
         plt.title(f"Diagrama de dispersión y regresión lineal: {g1} vs {g2}")  # Título
@@ -399,7 +399,7 @@ dfmultiple.loc["Σ"] = sumatorias
 print("\nTabla de Contingencia con Datos Calculados:")
 print(dfmultiple)
 
-
+"""
 # Mostrar los resultados de las sumatorias en caso de que la tabla se resuma
 print("\n****Resultados de sumatorias en caso de que la tabla se resuma****")
 print(f"Σyt: {round(sumatorias['Óxido Nitroso (y)'], 4)}")
@@ -415,7 +415,7 @@ print(f"Σy*x2: {round(sumatorias['y*x2'], 4)}")
 print(f"Σy*x3: {round(sumatorias['y*x3'], 4)}")
 print(f"Σx1*x2: {round(sumatorias['x1*x2'], 4)}")
 print(f"Σx2*x3: {round(sumatorias['x2*x3'], 4)}")
-print(f"Σx1*x3: {round(sumatorias['x1*x3'], 4)}")
+print(f"Σx1*x3: {round(sumatorias['x1*x3'], 4)}")"""
 
 def gauss_jordan(A, B):
     AB = np.hstack([A, B.reshape(-1, 1)])  # Matriz ampliada [A|B]
